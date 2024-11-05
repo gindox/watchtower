@@ -4,17 +4,17 @@ services:
     image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    ports:
-      - 8080:8080
     command: --interval 10 --http-api-metrics --http-api-token demotoken --debug prometheus grafana
+    networks:
+      - watchtower
   prometheus:
     container_name: prometheus
     image: prom/prometheus
     volumes:
       - ./prometheus/:/etc/prometheus/
       - prometheus:/prometheus/
-    ports:
-      - 9090:9090
+    networks:
+      - watchtower
   grafana:
     container_name: grafana
     image: grafana/grafana
@@ -25,7 +25,13 @@ services:
     volumes:
       - grafana:/var/lib/grafana
       - ./grafana:/etc/grafana/provisioning
+    networks:
+      - watchtower
 
 volumes:
   prometheus: {}
   grafana: {}
+
+networks:
+  watchtower:
+    driver: bridge
